@@ -8,4 +8,5 @@
 - Implemented Volumes for persisting storage data
 - Multi-stage build for optimizing image size and build time
 - Effective usage of .dockerignore file
+- Auto-Restarts containers unless they are stopped manually.
 

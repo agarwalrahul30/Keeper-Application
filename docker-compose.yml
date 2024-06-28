@@ -13,6 +13,7 @@ services:
       - REACT_APP_API_URL=http://localhost:5000/api/data
     networks:
       - secure-network
+    restart: unless-stopped
 
   backend-secure:
     build:
@@ -26,6 +27,7 @@ services:
       - DB_CREDS_URL=mongodb://mongo-secure:27017/creds
     networks:
       - secure-network
+    restart: unless-stopped
   
   to-do-app:
     build:
@@ -39,6 +41,7 @@ services:
       - DB_TODO_URL=mongodb://mongo-todo:27017/todo
     networks:
       - todo-network
+    restart: unless-stopped
 
   mongo-secure:
     image: mongo:latest
@@ -48,6 +51,7 @@ services:
       - mongo-secure-data:/data/db
     networks:
       - secure-network
+    restart: unless-stopped
 
   mongo-todo:
     image: mongo:latest
@@ -57,6 +61,7 @@ services:
       - mongo-todo-data:/data/db
     networks:
       - todo-network
+    restart: unless-stopped
 
 volumes:
   mongo-secure-data:
