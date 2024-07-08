@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require("lodash");
 const dateModule = require(__dirname+"/date.js");
+const os = require('os');
 
 const app = express();
 
@@ -30,31 +31,26 @@ const listSchema = new mongoose.Schema({
 });
 const List = mongoose.model("List", listSchema);
 
-const buy = new Task({
+const sampleTask = new Task({
   name: "Buy Food"
 });
 
-const make = new Task({
-  name: "Make Food"
-});
-
-const eat = new Task({
-  name: "Eat Food"
-});
-
-const defaultTasks = [buy,make,eat];
+const defaultTasks = [sampleTask];
 
 app.get("/", function(req, res) {
   Task.find({}, function(err, result) {
     if(result.length === 0) {
       Task.insertMany(defaultTasks, function(err) {
         if(!err) {
-          console.log("Successfully inserted 3 tasks in root route.");
+          console.log("Successfully inserted 1 task in root route.");
         }
       });
       res.redirect("/");
     }else {
       res.render("list", {listTitle: date, newListItems: result});
+      //to check load-balancing
+      const hostname = os.hostname();
+      console.log(`Request received on hostname: ${hostname}`);
     }
   });
 });

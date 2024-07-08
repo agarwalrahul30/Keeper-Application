@@ -1,40 +1,54 @@
 version: '3.8'
 
 services:
-  frontend-secure:
+  creds-frontend:
     build:
-      context: ./frontend-secure
+      context: ./Creds-frontend
       dockerfile: Dockerfile
+    container_name: creds-frontend
     ports:
       - "3000:3000"
     depends_on:
-      - backend-secure
+      - creds-backend
     environment:
       - REACT_APP_API_URL=http://localhost:5000/api/data
     networks:
-      - secure-network
+      - creds-secure-network
     restart: unless-stopped
 
-  backend-secure:
+  creds-backend:
     build:
-      context: ./Backend-secure
+      context: ./Creds-backend
       dockerfile: Dockerfile
+    container_name: creds-backend
     ports:
       - "5000:5000"
     depends_on:
-      - mongo-secure
+      - mongo-creds
     environment:
-      - DB_CREDS_URL=mongodb://mongo-secure:27017/creds
+      - DB_CREDS_URL=mongodb://mongo-creds:27017/creds
     networks:
-      - secure-network
+      - creds-secure-network
+    restart: unless-stopped
+
+  mongo-creds:
+    image: mongo:latest
+    container_name: mongoDB-creds
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-creds-data:/data/db
+    networks:
+      - creds-secure-network
     restart: unless-stopped
   
   to-do-app:
     build:
       context: ./To-do-list
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
+    # container_name: to-do-app
+    # ports:
+    #   - "8000:8000"
     depends_on:
       - mongo-todo
     environment:
@@ -43,30 +57,31 @@ services:
       - todo-network
     restart: unless-stopped
 
-  mongo-secure:
-    image: mongo:latest
-    ports:
-      - "27018:27017"
-    volumes:
-      - mongo-secure-data:/data/db
-    networks:
-      - secure-network
-    restart: unless-stopped
-
   mongo-todo:
     image: mongo:latest
+    container_name: mongoDB-todo
     ports:
       - "27019:27017"
-    volumes:
-      - mongo-todo-data:/data/db
     networks:
       - todo-network
     restart: unless-stopped
+  
+  nginx-load-balancer:
+    image: nginx:latest
+    volumes: 
+      - ./nginx-server/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - to-do-app
+    ports:
+      - "8000:8000"
+    networks:
+      - todo-network
+    restart: unless-stopped
+    
 
 volumes:
-  mongo-secure-data:
-  mongo-todo-data:
+  mongo-creds-data:
 
 networks:
-  secure-network:
+  creds-secure-network:
   todo-network:

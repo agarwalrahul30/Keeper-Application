@@ -25,17 +25,15 @@ const itemSchema = new mongoose.Schema({
 const Item = mongoose.model('Item', itemSchema);
 
 const sampleData = [
-    { website:"GreytHR", username: "KIPI1139", password: "12345" },
-    { website:"Random Website", username: "mail.rainbox@gmail.com", password: "R6789@1234" },
-    { website:"https://agarwalrahul30.github.io/CV", username: "agarwalrahul30", password: "helloworld007" },
-  ];
+    
+];
   
-  Item.insertMany(sampleData)
-    .then(() => {
-      console.log('Sample data added');
-    //   mongoose.connection.close();
-    })
-    .catch(err => console.log(err));
+Item.insertMany(sampleData)
+  .then(() => {
+    console.log('Sample data added');
+  //   mongoose.connection.close();
+  })
+  .catch(err => console.log(err));
 
 // Sample data endpoint
 app.get('/api/data', async (req, res) => {
